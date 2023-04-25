@@ -3,6 +3,7 @@ package com.atguigu.springcloud.controller;
 import com.atguigu.springcloud.entities.CommonResult;
 import com.atguigu.springcloud.entities.Payment;
 import com.atguigu.springcloud.service.PaymentService;
+import io.micrometer.core.instrument.util.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version 1.0
@@ -29,6 +31,11 @@ public class PaymentController {
 
     @Value("${server.port}")
     private String serverPort;
+
+    @GetMapping(value = "/payment/lb")
+    public String getServerPort(){
+        return serverPort;
+    }
 
     @PostMapping("/payment/create")
     public CommonResult create(@RequestBody Payment payment){
@@ -65,4 +72,19 @@ public class PaymentController {
         }
         return this.discoveryClient;
     }
+
+    /**
+     * 测试fegin超时：服务提供者需要运行3秒，消费者默认只能连接1s，否则报错
+     */
+    @GetMapping(value = "/payment/fegintimeout/lb")
+    public String feginTimeOut(){
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return serverPort;
+    }
+
+
 }

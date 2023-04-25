@@ -2,7 +2,11 @@ package com.atguigu.springcloud.controller;
 
 import com.atguigu.springcloud.entities.CommonResult;
 import com.atguigu.springcloud.entities.Payment;
+import com.atguigu.springcloud.loadbalance.CRoundRobinRule;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.net.URI;
+import java.util.List;
 
 /**
  * @version 1.0
@@ -26,6 +32,25 @@ public class OrderController {
     @Resource
     private RestTemplate restTemplate;
 
+    @Resource
+    private DiscoveryClient discoveryClient;
+
+    @Resource
+    private CRoundRobinRule cRoundRobinRule;
+
+    @GetMapping("/consumer/payment/lb")
+    public String getServerPort(){
+        List<ServiceInstance> instances = discoveryClient.getInstances("cloud-payment-service");
+        ServiceInstance instance = cRoundRobinRule.instance(instances);
+        URI uri = instance.getUri();
+        System.out.println("****uri: "+uri);
+        if(instances == null || instances.size()<=0) {
+            return null;
+        }
+        return restTemplate.getForObject(uri + "/payment/lb" , String.class);
+    }
+
+
     @PostMapping("/consumer/payment/create")
     public CommonResult create(Payment payment){
         return restTemplate.postForObject(PAYMENT_URL+"/payment/create",payment,CommonResult.class);
@@ -33,5 +58,15 @@ public class OrderController {
     @GetMapping("/consumer/payment/get/{id}")
     public CommonResult getPaymentById(@PathVariable("id")Long id){
         return restTemplate.getForObject(PAYMENT_URL+"/payment/get/"+id,CommonResult.class);
+    }
+    @GetMapping("/consumer/payment/getForEntity/{id}")
+    public CommonResult getForEntityById(@PathVariable("id")Long id){
+        ResponseEntity<CommonResult> entity = restTemplate.getForEntity(PAYMENT_URL + "/payment/get/" + id, CommonResult.class);
+        if (entity.getStatusCode().is2xxSuccessful()){
+            log.info("getForEntity基本信息： "+entity.getStatusCode()+" 状态值："+entity.getStatusCodeValue()+" 响应头信息："+entity.getHeaders());
+            return entity.getBody();
+        }else {
+            return new CommonResult(444,"defeat");
+        }
     }
 }

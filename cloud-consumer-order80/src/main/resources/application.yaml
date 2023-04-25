@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: cloud-order-service #该服务实例名称
+    name: cloud-order-service #该服务名称
 
 eureka:
   client:
