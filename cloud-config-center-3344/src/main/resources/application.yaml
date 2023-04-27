@@ -12,9 +12,23 @@ spring:
           search-paths:   #搜索目录
             - springcloud-config  #GitHub上面的git仓库名字
           default-label: main   #该仓库上面的分支
+  rabbitmq:
+    host: redis100
+    port: 5672
+    username: admin
+    password: 123
+
+#rabbitmq相关配置
 
 #服务注册到eureka地址
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:7001/eureka
+
+###rabbitmq相关配置,暴露bus刷新配置的端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'bus-refresh'

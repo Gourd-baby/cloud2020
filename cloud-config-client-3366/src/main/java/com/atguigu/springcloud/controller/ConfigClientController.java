@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @version 1.0
  * @Author 作者名
- * @Date 2023/4/28 1:05
+ * @Date 2023/4/28 3:56
  * @注释
  */
 @RestController
@@ -26,4 +26,5 @@ public class ConfigClientController
     {
         return "serverPort: "+serverPort+"\t\n\n configInfo: "+configInfo;
     }
+
 }
