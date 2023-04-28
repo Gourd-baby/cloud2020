@@ -38,6 +38,14 @@ public class OrderController {
     @Resource
     private CRoundRobinRule cRoundRobinRule;
 
+    // ====================> zipkin+sleuth
+    @GetMapping("/consumer/payment/zipkin")
+    public String paymentZipkin()
+    {
+        String result = restTemplate.getForObject("http://localhost:8001"+"/payment/zipkin/", String.class);
+        return result;
+    }
+
     @GetMapping("/consumer/payment/lb")
     public String getServerPort(){
         List<ServiceInstance> instances = discoveryClient.getInstances("cloud-payment-service");

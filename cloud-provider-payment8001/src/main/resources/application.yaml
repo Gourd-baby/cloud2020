@@ -3,12 +3,18 @@ server:
 spring:
   application:
     name: cloud-payment-service
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:  #采样率值介于 0 到 1 之间，1 则表示全部采集
+      probability: 1
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:13306/db2019?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: root
     password: root
+
 
 mybatis:
   type-aliases-package: com.atguigu.springcloud.entities
@@ -21,9 +27,9 @@ eureka:
     fetch-registry: true
     service-url:
       #defaultZone: http://localhost:7001/eureka
-      defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka #集群版
+      #defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka #集群版
       #单机版
-      #defaultZone: http://eureka7001.com:7001/eureka
+      defaultZone: http://eureka7001.com:7001/eureka
   instance:
     instance-id: payment8001 #cloud-payment-service 微服务中的服务实例8001的名称
     prefer-ip-address: true #可以在EurekaServer中显示IP

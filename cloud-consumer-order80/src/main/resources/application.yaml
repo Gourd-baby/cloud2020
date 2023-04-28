@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: cloud-order-service #该服务名称
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1
 
 eureka:
   client:
@@ -12,8 +17,8 @@ eureka:
     #是否从已有的Eureka Server抓取已有的注册信息，默认为true，单节点无所谓。集群必须设置为true才能配合ribbon使用负载均衡
     fetch-registry: true
     service-url:
-      #defaultZone: http://localhost:7001/eureka
-      defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka #集群版
+      defaultZone: http://localhost:7001/eureka
+      #defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka #集群版
   instance:
     instance-id: order80 #cloud-order-service 微服务中的服务实例80的名称
     prefer-ip-address: true #可以在EurekaServer中显示IP
